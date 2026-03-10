@@ -1,4 +1,3 @@
-// src/stores/notesStore.js
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
@@ -6,6 +5,7 @@ export const useNotesStore = defineStore('notes', () => {
     const columns = ref([
         {
             id: 1,
+            maxCards: 3,
             cards: [
                 {
                     id: 1,
@@ -20,6 +20,7 @@ export const useNotesStore = defineStore('notes', () => {
         },
         {
             id: 2,
+            maxCards: 5,
             cards: [
                 {
                     id: 2,
@@ -34,15 +35,33 @@ export const useNotesStore = defineStore('notes', () => {
                 }
             ]
         },
-        { id: 3, cards: [] }
+        {
+            id: 3,
+            maxCards: Infinity,
+            cards: []
+        }
     ])
 
+    const togglePoint = (cardId, pointId) => {
+        for (const column of columns.value) {
+            const card = column.cards.find(c => c.id === cardId)
+            if (card) {
+                const point = card.points.find(p => p.id === pointId)
+                if (point) {
+                    point.isReady = !point.isReady
+                    console.log(` Пункт ${pointId} в карточке ${cardId} теперь:`, point.isReady)
+                    return
+                }
+            }
+        }
+    }
+
     const logStore = () => {
-        console.log('Состояние store:')
+        console.log(' Состояние store:')
         columns.value.forEach(col => {
-            console.log(`Колонка ${col.id}: ${col.cards.length} карточек`)
+            console.log(`Колонка ${col.id}: ${col.cards.length}/${col.maxCards === Infinity ? '∞' : col.maxCards} карточек`)
         })
     }
 
-    return { columns, logStore }
+    return { columns, togglePoint, logStore }
 })
