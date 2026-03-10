@@ -17,12 +17,17 @@
         <span class="point-text">{{ point.title }}</span>
       </li>
     </ul>
+
     <div class="progress-bar">
       <div
           class="progress-fill"
           :style="{ width: `${completionPercent}%` }"
       ></div>
       <span class="progress-text">{{ completionPercent }}%</span>
+    </div>
+
+    <div v-if="completedAt" class="completion-date">
+      Завершена: {{ formatDate(completedAt) }}
     </div>
   </div>
 </template>
@@ -34,7 +39,8 @@ import { useNotesStore } from '@/stores/notesStore'
 const props = defineProps({
   cardTitle: String,
   points: Array,
-  id: Number
+  id: Number,
+  completedAt: [String, null]
 })
 
 const store = useNotesStore()
@@ -47,6 +53,17 @@ const completionPercent = computed(() => {
 
 const togglePoint = (pointId) => {
   store.togglePoint(props.id, pointId)
+}
+
+const formatDate = (dateString) => {
+  const date = new Date(dateString)
+  return date.toLocaleString('ru-RU', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  })
 }
 </script>
 
@@ -118,7 +135,7 @@ const togglePoint = (pointId) => {
   border-radius: 10px;
   overflow: hidden;
   position: relative;
-  margin-top: 8px;
+  margin: 8px 0;
 }
 
 .progress-fill {
@@ -137,5 +154,15 @@ const togglePoint = (pointId) => {
   font-size: 0.7rem;
   font-weight: 600;
   text-shadow: 0 0 2px white;
+}
+
+.completion-date {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid #e0e0e0;
+  color: #28a745;
+  font-size: 0.8rem;
+  text-align: right;
+  font-style: italic;
 }
 </style>

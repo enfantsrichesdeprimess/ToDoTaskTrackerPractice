@@ -12,6 +12,7 @@
           :id="card.id"
           :card-title="card.cardTitle"
           :points="card.points"
+          :completed-at="card.completedAt"
       />
 
       <div v-if="!cards.length" class="empty-message">
