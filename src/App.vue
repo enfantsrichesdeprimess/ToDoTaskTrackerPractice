@@ -23,7 +23,7 @@ onMounted(() => {
 
 <style scoped>
 .app {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 20px;
 }
@@ -32,11 +32,15 @@ h1 {
   text-align: center;
   margin-bottom: 30px;
   color: #333;
+  font-size: 2.5rem;
+  font-weight: 300;
+  letter-spacing: 1px;
 }
 
 .columns {
   display: flex;
-  gap: 20px;
+  gap: 24px;
   justify-content: center;
+  align-items: flex-start;
 }
 </style>

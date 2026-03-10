@@ -1,3 +1,4 @@
+<!-- src/components/Column.vue -->
 <template>
   <div class="column">
     <h2>Колонка {{ columnId }}</h2>
@@ -30,7 +31,6 @@ const props = defineProps({
 
 const store = useNotesStore()
 
-
 const cards = computed(() => {
   const column = store.columns.find(col => col.id === props.columnId)
   return column ? column.cards : []
@@ -52,16 +52,24 @@ const cards = computed(() => {
   color: #666;
   margin-bottom: 20px;
   font-size: 1.2rem;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #f0f0f0;
 }
 
 .cards-container {
   min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .empty-message {
   text-align: center;
   color: #999;
   font-style: italic;
-  padding: 20px;
+  padding: 30px 20px;
+  background: #fafafa;
+  border-radius: 6px;
+  border: 2px dashed #ddd;
 }
 </style>
