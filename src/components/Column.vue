@@ -6,23 +6,39 @@
         <span v-if="isLocked" class="lock-badge" title="Колонка заблокирована"></span>
       </div>
       <div class="column-stats">
-        <span class="card-count">{{ cards.length }}</span>
+        <span class="card-count">{{ columnCards.length }}</span>
         <span class="card-limit">/{{ maxCards }}</span>
       </div>
     </div>
 
     <div class="cards-container">
-      <Card
-          v-for="card in cards"
-          :key="card.id"
-          :id="card.id"
-          :card-title="card.cardTitle"
-          :points="card.points"
-          :completed-at="card.completedAt"
-          :is-locked="isLocked && columnId === 1"
-      />
+      <draggable
+          v-model="columnCards"
+          :group="{ name: 'cards' }"
+          :sort="true"
+          :disabled="isLocked && columnId === 1"
+          item-key="id"
+          handle=".drag-handle"
+          @end="onDragEnd"
+          class="drag-area"
+      >
+        <template #item="{ element }">
+          <div class="card-wrapper">
+            <div v-if="!(isLocked && columnId === 1)" class="drag-handle">
+              ⋮⋮
+            </div>
+            <Card
+                :id="element.id"
+                :card-title="element.cardTitle"
+                :points="element.points"
+                :completed-at="element.completedAt"
+                :is-locked="isLocked && columnId === 1"
+            />
+          </div>
+        </template>
+      </draggable>
 
-      <div v-if="!cards.length" class="empty-state">
+      <div v-if="!columnCards.length" class="empty-state">
         <div class="empty-icon">📝</div>
         <p class="empty-text">Нет карточек</p>
         <p class="empty-hint">Перетащите или создайте новую</p>
@@ -41,6 +57,7 @@
 import { computed } from 'vue'
 import { useNotesStore } from '@/stores/notesStore'
 import Card from './Card.vue'
+import draggable from 'vuedraggable'
 
 const props = defineProps({
   columnId: {
@@ -55,7 +72,15 @@ const column = computed(() => {
   return store.columns.find(col => col.id === props.columnId)
 })
 
-const cards = computed(() => column.value?.cards || [])
+const columnCards = computed({
+  get: () => column.value?.cards || [],
+  set: (newCards) => {
+    if (column.value) {
+      column.value.cards = newCards
+    }
+  }
+})
+
 const maxCards = computed(() => {
   const limit = column.value?.maxCards
   return limit === Infinity ? '∞' : limit
@@ -64,6 +89,9 @@ const maxCards = computed(() => {
 const isLocked = computed(() => {
   return props.columnId === 1 && store.isColumn1Locked
 })
+
+const onDragEnd = () => {
+}
 </script>
 
 <style scoped>
@@ -133,7 +161,49 @@ const isLocked = computed(() => {
   min-height: 400px;
   display: flex;
   flex-direction: column;
+}
+
+.drag-area {
+  display: flex;
+  flex-direction: column;
   gap: 16px;
+  min-height: 100px;
+}
+
+.card-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  transition: transform 0.2s;
+}
+
+.card-wrapper:hover {
+  transform: translateX(-4px);
+}
+
+.drag-handle {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: #adb5bd;
+  cursor: grab;
+  user-select: none;
+  margin-top: 20px;
+  border-radius: 4px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.drag-handle:hover {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
 }
 
 .empty-state {
