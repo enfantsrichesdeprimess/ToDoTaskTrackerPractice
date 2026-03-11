@@ -28,7 +28,8 @@ export const useNotesStore = defineStore('notes', () => {
                             { id: 3, title: 'поиграть в доту на бруде вместо практики', isReady: false },
                             { id: 4, title: 'или в дедлок может быть', isReady: false }
                         ],
-                        completedAt: null
+                        completedAt: null,
+                        createdAt: '2026-03-01T10:00:00.000Z'
                     },
                     {
                         id: 2,
@@ -37,9 +38,9 @@ export const useNotesStore = defineStore('notes', () => {
                             { id: 5, title: 'Пробежка 5 км', isReady: true },
                             { id: 6, title: 'Отжимания 50 раз', isReady: false },
                             { id: 7, title: 'Растяжка 15 мин', isReady: false },
-
                         ],
-                        completedAt: null
+                        completedAt: null,
+                        createdAt: '2026-03-05T10:00:00.000Z'
                     },
                     {
                         id: 3,
@@ -49,7 +50,8 @@ export const useNotesStore = defineStore('notes', () => {
                             { id: 9, title: 'Выписать цитаты', isReady: false },
                             { id: 10, title: 'Написать конспект', isReady: false }
                         ],
-                        completedAt: null
+                        completedAt: null,
+                        createdAt: '2026-03-02T10:00:00.000Z'
                     }
                 ]
             },
@@ -67,7 +69,8 @@ export const useNotesStore = defineStore('notes', () => {
                             { id: 14, title: 'Сыр', isReady: false },
                             { id: 15, title: 'Помидоры', isReady: false }
                         ],
-                        completedAt: null
+                        completedAt: null,
+                        createdAt: '2026-03-01T10:00:00.000Z'
                     },
                     {
                         id: 5,
@@ -79,7 +82,8 @@ export const useNotesStore = defineStore('notes', () => {
                             { id: 19, title: 'План на неделю', isReady: false },
                             { id: 20, title: 'Обновить документацию', isReady: false }
                         ],
-                        completedAt: null
+                        completedAt: null,
+                        createdAt: '2026-03-03T10:00:00.000Z'
                     },
                     {
                         id: 6,
@@ -91,7 +95,8 @@ export const useNotesStore = defineStore('notes', () => {
                             { id: 24, title: 'Вынести мусор', isReady: false },
                             { id: 25, title: 'Сменить постельное', isReady: false }
                         ],
-                        completedAt: null
+                        completedAt: null,
+                        createdAt: '2026-03-04T10:00:00.000Z'
                     }
                 ]
             },
@@ -109,7 +114,8 @@ export const useNotesStore = defineStore('notes', () => {
                             { id: 29, title: 'Задеплоить', isReady: true },
                             { id: 30, title: 'Сдать заказчику', isReady: true }
                         ],
-                        completedAt: '2024-03-10T14:30:00.000Z'
+                        completedAt: '2024-03-10T14:30:00.000Z',
+                        createdAt: '2024-03-01T10:00:00.000Z'
                     },
                     {
                         id: 8,
@@ -119,7 +125,8 @@ export const useNotesStore = defineStore('notes', () => {
                             { id: 32, title: 'Сделать проект', isReady: true },
                             { id: 33, title: 'Защитить работу', isReady: true }
                         ],
-                        completedAt: '2026-03-09T11:20:00.000Z'
+                        completedAt: '2026-03-09T11:20:00.000Z',
+                        createdAt: '2026-03-01T10:00:00.000Z'
                     },
                     {
                         id: 9,
@@ -131,7 +138,8 @@ export const useNotesStore = defineStore('notes', () => {
                             { id: 37, title: 'Неделя 4', isReady: true },
                             { id: 38, title: 'Финиш', isReady: true }
                         ],
-                        completedAt: '2026-03-08T09:15:00.000Z'
+                        completedAt: '2026-03-08T09:15:00.000Z',
+                        createdAt: '2026-02-01T10:00:00.000Z'
                     }
                 ]
             }
@@ -150,6 +158,48 @@ export const useNotesStore = defineStore('notes', () => {
         const completed = card.points.filter(p => p.isReady).length
         return Math.round((completed / card.points.length) * 100)
     }
+
+    const overdueCardsCount = computed(() => {
+        let count = 0
+        const now = new Date()
+
+        columns.value.forEach(column => {
+            column.cards.forEach(card => {
+                if (!card.completedAt && card.createdAt) {
+                    const createdDate = new Date(card.createdAt)
+                    const daysDiff = (now - createdDate) / (1000 * 60 * 60 * 24)
+
+                    if (daysDiff > 1) {
+                        count++
+                    }
+                }
+            })
+        })
+
+        return count
+    })
+
+    const taskStats = computed(() => {
+        let completed = 0
+        let total = 0
+
+        columns.value.forEach(column => {
+            column.cards.forEach(card => {
+                card.points.forEach(point => {
+                    total++
+                    if (point.isReady) {
+                        completed++
+                    }
+                })
+            })
+        })
+
+        return {
+            completed,
+            total,
+            ratio: total > 0 ? Math.round((completed / total) * 100) : 0
+        }
+    })
 
     const findCard = (cardId) => {
         for (const column of columns.value) {
@@ -226,6 +276,8 @@ export const useNotesStore = defineStore('notes', () => {
     return {
         columns,
         togglePoint,
-        isColumn1Locked
+        isColumn1Locked,
+        overdueCardsCount,
+        taskStats
     }
 })

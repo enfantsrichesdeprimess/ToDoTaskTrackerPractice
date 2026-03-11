@@ -1,5 +1,6 @@
 <script setup>
 import Column from "@/components/Column.vue";
+import Statistics from "@/components/Statistics.vue";
 import { useNotesStore } from '@/stores/notesStore'
 
 const store = useNotesStore()
@@ -11,6 +12,8 @@ const store = useNotesStore()
       <h1>Мои заметки</h1>
       <p class="header-subtitle">Управляй задачами с умом</p>
     </header>
+
+    <Statistics />
 
     <div class="columns">
       <Column :column-id="1" />
@@ -32,7 +35,7 @@ const store = useNotesStore()
 
 .app-header {
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
 }
 
 h1 {
@@ -59,6 +62,7 @@ h1 {
   justify-content: center;
   align-items: stretch;
   flex: 1;
+  margin-top: 20px;
 }
 
 @media (max-width: 1000px) {
