@@ -4,7 +4,7 @@
       <div class="stat-content">
         <div class="stat-label">Просроченные карточки</div>
         <div class="stat-value">{{ overdueCount }}</div>
-        <div class="stat-hint">(больше 3 дней)</div>
+        <div class="stat-hint">(больше 1 дня)</div>
       </div>
     </div>
 
